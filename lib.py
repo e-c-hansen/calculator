@@ -63,7 +63,6 @@ class Trainer(nnx.Optimizer):
         Args:
             grads: Gradients computed during model training.
             updates: Updates to the model params based on `grads`.
-        
         """
         self.metrics.update(**updates)
         super().update(grads)
@@ -93,7 +92,6 @@ def loss(
         target: Target output array of the `model`.
         scalar: Scalar value by which to multiply the computed loss
             value.
-    
     """
     return scalar * ((model(inp) - target) ** 2).mean()
 
@@ -147,7 +145,8 @@ def flatten(value: jnp.ndarray | Sequence[float] | float) -> float:
         value: An array or list of floats or a single float value
             intended to be flattened.
     
-    Returns: the flattened input value.
+    Returns:
+        The flattened input value.
 
     Raises:
         ValueError: When the array is not able to be flattened
@@ -182,6 +181,7 @@ def train(
         num_operations = 2,
         minval: int = 0,
         maxval: int = 100000,
+        plot_eval: bool = True,
         debug: bool = False,
 ) -> None:
     """Train and eval a model, save the checkpoint, and plot eval performance.
@@ -208,7 +208,6 @@ def train(
         maxval: Largest integer value to use for an element
             within the synthetic training example.
         debug: Run in debug mode where logging is more verbose.
-
     """
     model = Model(
         dict(
@@ -265,8 +264,8 @@ def train(
         ckpt_state,
         force=True
     )
-
-    plt.semilogy(sorted(list(steps_to_eval)), diffs)
-    plt.ylabel("Expected vs Actual Output Percent Difference")
-    plt.xlabel("Training Step")
-    plt.show()
+    if plot_eval:
+        plt.semilogy(sorted(list(steps_to_eval)), diffs)
+        plt.ylabel("Expected vs Actual Output Percent Difference")
+        plt.xlabel("Training Step")
+        plt.show()
